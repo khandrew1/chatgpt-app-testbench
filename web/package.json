@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"description": "ChatGPT App Widgets",
 	"scripts": {
-		"build": "esbuild widgets/reservation-card.tsx --bundle --format=esm --outfile=dist/reservation-card.js",
+		"build": "esbuild widgets/reservation-card.tsx --bundle --format=esm --outfile=dist/reservation-card.js && esbuild widgets/testbench.tsx --bundle --format=esm --outfile=dist/testbench.js",
 		"build:css": "tailwindcss -i globals.css -o dist/globals.css",
 		"build:all": "npm run build && npm run build:css"
 	},

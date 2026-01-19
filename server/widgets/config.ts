@@ -11,4 +11,14 @@ export const WIDGET_CONFIGS: WidgetConfig[] = [
 			prefersBorder: true,
 		},
 	},
+	{
+		name: 'testbench',
+		uri: 'ui://widget/testbench.html',
+		title: 'API Testbench Widget',
+		description: 'Interactive testbench for window.openai API',
+		rootElementId: 'testbench-root',
+		meta: {
+			prefersBorder: true,
+		},
+	},
 ];
