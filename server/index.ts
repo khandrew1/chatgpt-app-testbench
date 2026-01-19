@@ -43,6 +43,55 @@ server.registerTool(
 	},
 );
 
+server.registerTool(
+	'show-testbench',
+	{
+		title: 'Show API Testbench',
+		inputSchema: {},
+		_meta: {
+			'openai/outputTemplate': 'ui://widget/testbench.html',
+			'openai/toolInvocation/invoking': 'Opening API testbench...',
+			'openai/toolInvocation/invoked': 'API testbench ready.',
+		},
+	},
+	async () => {
+		return {
+			content: [
+				{
+					type: 'text',
+					text: 'Showing API testbench widget',
+				},
+			],
+		};
+	},
+);
+
+server.registerTool(
+	'echo',
+	{
+		title: 'Echo Tool',
+		description: 'Demo tool that echoes back the input message. Used for testing callTool from widgets.',
+		inputSchema: { message: z.string().describe('Message to echo back') },
+		_meta: {
+			'openai/componentInitiated': true,
+		},
+	},
+	async ({ message }) => {
+		return {
+			content: [
+				{
+					type: 'text',
+					text: `Echo: ${message}`,
+				},
+			],
+			structuredContent: {
+				echoed: message,
+				timestamp: new Date().toISOString(),
+			},
+		};
+	},
+);
+
 export default {
 	fetch: async (request: Request, env: Env, ctx: ExecutionContext) => {
 		// @ts-ignore McpHandler is too strict with current SDK version
