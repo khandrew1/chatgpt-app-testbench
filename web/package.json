@@ -1,0 +1,22 @@
+{
+	"name": "web",
+	"version": "0.0.1",
+	"description": "ChatGPT App Widgets",
+	"scripts": {
+		"build": "esbuild widgets/reservation-card.tsx --bundle --format=esm --outfile=dist/reservation-card.js",
+		"build:css": "tailwindcss -i globals.css -o dist/globals.css",
+		"build:all": "npm run build && npm run build:css"
+	},
+	"devDependencies": {
+		"@tailwindcss/cli": "^4.1.18",
+		"@types/react-dom": "^19.2.3",
+		"esbuild": "^0.27.2",
+		"typescript": "^5.9.3"
+	},
+	"dependencies": {
+		"@openai/apps-sdk-ui": "^0.2.1",
+		"react": "^19.2.3",
+		"react-dom": "^19.2.3",
+		"tailwindcss": "^4.1.18"
+	}
+}
