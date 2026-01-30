@@ -38,6 +38,7 @@ declare global {
 			getFileDownloadUrl: (opts: { fileId: string }) => Promise<string>;
 			notifyIntrinsicHeight: (height: number) => Promise<void>;
 			setOpenInAppUrl: (opts: { href: string }) => void;
+			requestModal: (opts?: { template?: string }) => Promise<unknown>;
 		};
 	}
 }
@@ -156,6 +157,7 @@ function MethodsSection({ onResult }: { onResult: (result: ApiResult) => void })
 	const [fileId, setFileId] = useState('');
 	const [intrinsicHeight, setIntrinsicHeight] = useState('400');
 	const [openInAppUrl, setOpenInAppUrl] = useState('https://example.com/app');
+	const [customModalUri, setCustomModalUri] = useState('ui://widget/modal-echo.html');
 
 	const handleApiCall = async (method: string, fn: () => Promise<unknown>) => {
 		try {
@@ -461,6 +463,78 @@ function MethodsSection({ onResult }: { onResult: (result: ApiResult) => void })
 							}}
 						>
 							Set Open-in-App URL
+						</Button>
+					</div>
+				</div>
+
+				{/* requestModal */}
+				<div className="p-3 bg-surface-secondary rounded-lg">
+					<div className="text-xs font-medium mb-2">requestModal(&#123; template? &#125;)</div>
+					<div className="space-y-2">
+						<div className="flex gap-2 flex-wrap">
+							<Button
+								variant="soft"
+								color="secondary"
+								onClick={() =>
+									handleApiCall('requestModal (empty)', () =>
+										window.openai.requestModal()
+									)
+								}
+							>
+								Empty
+							</Button>
+							<Button
+								variant="soft"
+								color="secondary"
+								onClick={() =>
+									handleApiCall('requestModal', () =>
+										window.openai.requestModal({ template: 'ui://widget/modal-echo.html' })
+									)
+								}
+							>
+								Echo
+							</Button>
+							<Button
+								variant="soft"
+								color="secondary"
+								onClick={() =>
+									handleApiCall('requestModal', () =>
+										window.openai.requestModal({ template: 'ui://widget/modal-timestamp.html' })
+									)
+								}
+							>
+								Timestamp
+							</Button>
+							<Button
+								variant="soft"
+								color="secondary"
+								onClick={() =>
+									handleApiCall('requestModal', () =>
+										window.openai.requestModal({ template: 'ui://widget/modal-random.html' })
+									)
+								}
+							>
+								Random
+							</Button>
+						</div>
+						<input
+							type="text"
+							value={customModalUri}
+							onChange={(e) => setCustomModalUri(e.target.value)}
+							placeholder="Custom template URI"
+							className="w-full px-2 py-1 text-sm border border-default rounded bg-surface font-mono"
+						/>
+						<Button
+							variant="soft"
+							color="primary"
+							block
+							onClick={() =>
+								handleApiCall('requestModal', () =>
+									window.openai.requestModal({ template: customModalUri })
+								)
+							}
+						>
+							Open Custom Modal
 						</Button>
 					</div>
 				</div>

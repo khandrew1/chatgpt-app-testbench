@@ -92,6 +92,92 @@ server.registerTool(
 	},
 );
 
+server.registerTool(
+	'get-timestamp',
+	{
+		title: 'Get Timestamp',
+		description: 'Returns the current server timestamp in multiple formats.',
+		inputSchema: {},
+		_meta: {
+			'openai/componentInitiated': true,
+		},
+	},
+	async () => {
+		const now = new Date();
+		return {
+			content: [
+				{
+					type: 'text',
+					text: `Current timestamp: ${now.toISOString()}`,
+				},
+			],
+			structuredContent: {
+				iso: now.toISOString(),
+				unix: now.getTime(),
+				utc: now.toUTCString(),
+				local: now.toLocaleString(),
+				timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+			},
+		};
+	},
+);
+
+server.registerTool(
+	'random-number',
+	{
+		title: 'Random Number',
+		description: 'Generates a random number within the specified range.',
+		inputSchema: {
+			min: z.number().describe('Minimum value (inclusive)').default(1),
+			max: z.number().describe('Maximum value (inclusive)').default(100),
+		},
+		_meta: {
+			'openai/componentInitiated': true,
+		},
+	},
+	async ({ min, max }) => {
+		const value = Math.floor(Math.random() * (max - min + 1)) + min;
+		return {
+			content: [
+				{
+					type: 'text',
+					text: `Random number between ${min} and ${max}: ${value}`,
+				},
+			],
+			structuredContent: {
+				value,
+				min,
+				max,
+				timestamp: new Date().toISOString(),
+			},
+		};
+	},
+);
+
+server.registerTool(
+	'csp-test',
+	{
+		title: 'CSP Test',
+		description: 'Test Content Security Policy domains for connect and resource access.',
+		inputSchema: {},
+		_meta: {
+			'openai/outputTemplate': 'ui://widget/csp-test.html',
+			'openai/toolInvocation/invoking': 'Loading CSP test widget...',
+			'openai/toolInvocation/invoked': 'CSP test widget ready.',
+		},
+	},
+	async () => {
+		return {
+			content: [
+				{
+					type: 'text',
+					text: 'CSP Test widget loaded. Click "Run Tests" to verify domain access.',
+				},
+			],
+		};
+	},
+);
+
 export default {
 	fetch: async (request: Request, env: Env, ctx: ExecutionContext) => {
 		// @ts-ignore McpHandler is too strict with current SDK version

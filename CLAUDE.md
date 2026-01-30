@@ -45,5 +45,4 @@ For a quick reference to the `window.openai` API you can use this: https://devel
 3. Add config to `WIDGET_CONFIGS` in `server/widgets/config.ts`
 4. Optionally register a tool in `server/index.ts` with `openai/outputTemplate` pointing to widget URI
 
-This project uses the Apps SDK UI library with documentation found here: https://openai.github.io/apps-sdk-ui/?path=/docs/overview-introduction--docs
-You should use web fetch for these docs instead of context7
+Always use the OpenAI developer documentation MCP server if you need to work with the OpenAI API, ChatGPT Apps SDK, Codex,… without me having to explicitly ask.
