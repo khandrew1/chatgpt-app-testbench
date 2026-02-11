@@ -3,16 +3,26 @@ import { useState, useEffect } from 'react';
 import { Badge } from '@openai/apps-sdk-ui/components/Badge';
 import { Button } from '@openai/apps-sdk-ui/components/Button';
 
+declare global {
+	interface Window {
+		openai?: {
+			theme?: 'light' | 'dark';
+		};
+	}
+}
+
 interface TestResult {
 	domain: string;
-	type: 'connect' | 'resource';
+	type: 'connect' | 'resource' | 'frame';
 	status: 'pending' | 'success' | 'error';
 	message?: string;
+	imageUrl?: string;
 }
 
 const CSP_CONFIG = {
 	connect_domains: ['https://httpbin.org'],
-	resource_domains: ['https://via.placeholder.com'],
+	resource_domains: ['https://placehold.co'],
+	frame_domains: ['https://example.com'],
 };
 
 function useTheme() {
@@ -99,6 +109,7 @@ function CspTestWidget() {
 			]);
 
 			try {
+				const imageUrl = `${domain}/150`;
 				await new Promise<void>((resolve, reject) => {
 					const img = new Image();
 					const timeoutId = setTimeout(() => {
@@ -113,7 +124,7 @@ function CspTestWidget() {
 						clearTimeout(timeoutId);
 						reject(new Error('Failed to load'));
 					};
-					img.src = `${domain}/150`;
+					img.src = imageUrl;
 				});
 
 				setResults((prev) =>
@@ -123,6 +134,7 @@ function CspTestWidget() {
 									...r,
 									status: 'success',
 									message: 'Image loaded',
+									imageUrl,
 								}
 							: r,
 					),
@@ -131,6 +143,62 @@ function CspTestWidget() {
 				setResults((prev) =>
 					prev.map((r) =>
 						r.domain === domain && r.type === 'resource'
+							? {
+									...r,
+									status: 'error',
+									message: error instanceof Error ? error.message : 'Failed',
+								}
+							: r,
+					),
+				);
+			}
+		}
+
+		// Test frame domains
+		for (const domain of CSP_CONFIG.frame_domains) {
+			setResults((prev) => [
+				...prev,
+				{ domain, type: 'frame', status: 'pending' },
+			]);
+
+			try {
+				await new Promise<void>((resolve, reject) => {
+					const iframe = document.createElement('iframe');
+					iframe.style.display = 'none';
+					const timeoutId = setTimeout(() => {
+						document.body.removeChild(iframe);
+						reject(new Error('Timeout'));
+					}, 5000);
+
+					iframe.onload = () => {
+						clearTimeout(timeoutId);
+						document.body.removeChild(iframe);
+						resolve();
+					};
+					iframe.onerror = () => {
+						clearTimeout(timeoutId);
+						document.body.removeChild(iframe);
+						reject(new Error('Failed to load'));
+					};
+					iframe.src = domain;
+					document.body.appendChild(iframe);
+				});
+
+				setResults((prev) =>
+					prev.map((r) =>
+						r.domain === domain && r.type === 'frame'
+							? {
+									...r,
+									status: 'success',
+									message: 'Frame loaded',
+								}
+							: r,
+					),
+				);
+			} catch (error) {
+				setResults((prev) =>
+					prev.map((r) =>
+						r.domain === domain && r.type === 'frame'
 							? {
 									...r,
 									status: 'error',
@@ -173,6 +241,16 @@ function CspTestWidget() {
 						<span className="text-xs text-secondary">Resource Domains:</span>
 						<div className="flex flex-wrap gap-1 mt-1">
 							{CSP_CONFIG.resource_domains.map((domain) => (
+								<Badge key={domain} color="secondary" size="sm">
+									{domain}
+								</Badge>
+							))}
+						</div>
+					</div>
+					<div>
+						<span className="text-xs text-secondary">Frame Domains:</span>
+						<div className="flex flex-wrap gap-1 mt-1">
+							{CSP_CONFIG.frame_domains.map((domain) => (
 								<Badge key={domain} color="secondary" size="sm">
 									{domain}
 								</Badge>
@@ -225,6 +303,13 @@ function CspTestWidget() {
 								<div className="flex items-center gap-2">
 									{result.message && (
 										<span className="text-xs text-secondary">{result.message}</span>
+									)}
+									{result.imageUrl && result.status === 'success' && (
+										<img
+											src={result.imageUrl}
+											alt="CSP test"
+											className="w-8 h-8 rounded object-cover"
+										/>
 									)}
 									{result.status === 'pending' && (
 										<div className="w-4 h-4 border-2 border-secondary border-t-transparent rounded-full animate-spin" />

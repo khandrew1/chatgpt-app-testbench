@@ -61,7 +61,8 @@ export const WIDGET_CONFIGS: WidgetConfig[] = [
 			prefersBorder: true,
 			csp: {
 				connect_domains: ['https://httpbin.org'],
-				resource_domains: ['https://via.placeholder.com', 'https://cdn.openai.com', 'https://fonts.gstatic.com'],
+				resource_domains: ['https://placehold.co/150'],
+				frame_domains: ['https://example.com'],
 			},
 		},
 	},

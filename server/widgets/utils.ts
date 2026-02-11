@@ -20,6 +20,7 @@ export interface WidgetConfig {
 		csp?: {
 			connect_domains?: string[];
 			resource_domains?: string[];
+			frame_domains?: string[];
 		};
 	};
 }
