@@ -366,7 +366,7 @@ function MethodsSection({ onResult }: { onResult: (result: ApiResult) => void })
 								if (file) {
 									handleApiCall('uploadFile', async () => {
 										const result = await window.openai.uploadFile(file);
-										setFileId(result);
+										setFileId(result.fileId);
 										return result;
 									});
 								}
